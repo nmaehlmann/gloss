@@ -1,4 +1,5 @@
 {-# OPTIONS_HADDOCK hide #-}
+{-# LANGUAGE CPP #-}
 module Graphics.Gloss.Internals.Interface.Backend.GLUT
         (GLUTState,glutStateInit,initializeGLUT)
 where
@@ -102,7 +103,11 @@ initializeGLUT _ debug
 
                   GLUT.initialDisplayMode
                     $= [ GLUT.RGBMode
-                       , GLUT.DoubleBuffered]
+                       , GLUT.DoubleBuffered
+#ifdef MULTISAMPLINGENABLED
+                       , GLUT.WithSamplesPerPixel 4
+#endif
+                       ]
 
                   writeIORef glutInitialized True
 
@@ -140,6 +145,10 @@ openWindowGLUT _ display
                           (fromIntegral posY)
 
                _ <- GLUT.createWindow windowName
+
+#ifdef MULTISAMPLINGENABLED
+               GLUT.multisample $= GLUT.Enabled
+#endif
 
                GLUT.windowSize
                      $= GL.Size

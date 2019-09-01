@@ -40,6 +40,10 @@ Flag ExplicitBackend
                 you to choose what window manager backend to use.
   Default:      False
 
+Flag MultisamplingEnabled
+  Description:  Enables multisampling in GLUT backend.
+  Default:      False
+
 Library
   Build-Depends:
           base                          >= 4.8 && < 4.13
@@ -113,5 +117,8 @@ Library
     CPP-Options: -DWITHGLFW
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW
+
+  If flag(MultisamplingEnabled)
+    CPP-Options: -DMULTISAMPLINGENABLED
 
 -- vim: nospell
