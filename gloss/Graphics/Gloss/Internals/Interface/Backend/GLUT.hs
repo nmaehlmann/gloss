@@ -104,9 +104,7 @@ initializeGLUT _ debug
                   GLUT.initialDisplayMode
                     $= [ GLUT.RGBMode
                        , GLUT.DoubleBuffered
-#ifdef MULTISAMPLINGENABLED
-                       , GLUT.WithSamplesPerPixel 4
-#endif
+                       , GLUT.WithSamplesPerPixel 16
                        ]
 
                   writeIORef glutInitialized True
@@ -146,9 +144,7 @@ openWindowGLUT _ display
 
                _ <- GLUT.createWindow windowName
 
-#ifdef MULTISAMPLINGENABLED
-               GLUT.multisample $= GLUT.Enabled
-#endif
+        --        GLUT.multisample $= GLUT.Enabled
 
                GLUT.windowSize
                      $= GL.Size

@@ -10,7 +10,7 @@ main
         white
         100
         ""
-        (\str     -> Translate (-340) 0 $ Scale 0.1 0.1 $ Text str)
+        (\str     -> Translate (-340) 0 $ Scale 0.15 0.15 $ Text str)
         (\event _ -> show event)
         (\_ world -> world)
 
