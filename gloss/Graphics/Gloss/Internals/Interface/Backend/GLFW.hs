@@ -131,7 +131,8 @@ openWindowGLFW
         -> IO ()
 
 openWindowGLFW ref (InWindow title (sizeX, sizeY) pos)
- = do   win <- GLFW.createWindow 
+ = do   GLFW.windowHint $ GLFW.WindowHint'Samples 8
+        win <- GLFW.createWindow 
                 sizeX
                 sizeY
                 title
