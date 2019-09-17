@@ -104,7 +104,7 @@ initializeGLUT _ debug
                   GLUT.initialDisplayMode
                     $= [ GLUT.RGBMode
                        , GLUT.DoubleBuffered
-                       , GLUT.WithSamplesPerPixel 16
+                       , GLUT.WithSamplesPerPixel 8
                        ]
 
                   writeIORef glutInitialized True

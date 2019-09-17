@@ -84,12 +84,12 @@ drawPicture state circScale picture
 
         Text str
          -> do
-                lw <- get GL.lineWidth
-                GL.lineWidth $= 1.5
+                -- lw <- get GL.lineWidth
+                -- GL.lineWidth $= 1.5
                 GL.blend     $= GL.Disabled
                 GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
                 GL.blend     $= GL.Enabled
-                GL.lineWidth $= lw
+                -- GL.lineWidth $= lw
 
         -- colors with float components.
         Color col p
