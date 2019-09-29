@@ -12,6 +12,9 @@ import Graphics.Gloss.Internals.Data.Picture
 import Graphics.Gloss.Internals.Data.Color
 import System.Mem.StableName
 import Foreign.ForeignPtr
+import           Foreign.Ptr                    ( Ptr, nullPtr )
+import Foreign.Marshal.Utils (new)
+import Foreign.Marshal.Array
 import Data.IORef
 import Data.List
 import Control.Monad
@@ -86,10 +89,31 @@ drawPicture state circScale picture
          -> do
                 -- lw <- get GL.lineWidth
                 -- GL.lineWidth $= 1.5
-                GL.blend     $= GL.Disabled
+                let w = 300
+                let h = 200
+                let p1 = GL.Position 0 0
+                let p2 = GL.Position w h
+                
+                GL.currentColor  $= GL.Color4 0 0 0 0
+                fbo <- GL.genObjectName
+                GL.bindFramebuffer GL.Framebuffer $= fbo
+                text <- create2DTexture w h
+                GL.framebufferTexture2D GL.Framebuffer (GL.ColorAttachment 0) GL.Texture2D text 0
+                
+                -- GL.blend     $= GL.Disabled
                 GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
-                GL.blend     $= GL.Enabled
+                -- GL.blend     $= GL.Enabled
+
+                GL.bindFramebuffer GL.Framebuffer $= GL.defaultFramebufferObject
+                GL.bindFramebuffer GL.ReadFramebuffer $= fbo
+                GL.bindFramebuffer GL.DrawFramebuffer $= GL.defaultFramebufferObject
+
+                setBlendAlpha True
+                GL.blitFramebuffer p1 p2 p1 p2 [GL.ColorBuffer'] GL.Linear'
+                GL.deleteObjectName text
+                GL.deleteObjectName fbo
                 -- GL.lineWidth $= lw
+
 
         -- colors with float components.
         Color col p
@@ -245,6 +269,26 @@ drawPicture state circScale picture
 
         Pictures ps
          -> mapM_ (drawPicture state circScale) ps
+
+
+emptyArray :: IO (Ptr (GL.Color4 Float))
+emptyArray = newArray (replicate 100000 (GL.Color4 0 1 1 255 :: GL.Color4 Float))
+
+
+create2DTexture :: GL.GLint -> GL.GLint -> IO GL.TextureObject
+create2DTexture width height = do
+        --ptr <- new (GL.Color4 0 0 0 0 :: GL.Color4 Float)
+        setBlendAlpha True
+        ptr <- emptyArray
+        text <- GL.genObjectName
+        GL.textureBinding GL.Texture2D $= Just text
+        setBlendAlpha True
+        -- GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
+        setBlendAlpha True
+        let pd = GL.PixelData GL.RGBA GL.Float ptr
+        GL.texImage2D GL.Texture2D GL.NoProxy 0 GL.RGBA' (GL.TextureSize2D width height) 0 pd
+        GL.textureBinding GL.Texture2D $= Nothing
+        return text
 
 -- Errors ---------------------------------------------------------------------
 checkErrors :: String -> IO ()
